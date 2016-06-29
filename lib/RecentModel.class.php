@@ -1,12 +1,16 @@
 <?php
 class RecentModel {
-	public $recent = array();
-	private $pdo;
-	private $categories = array('TV Shows', 'Movies');
+	private $server = 'localhost';
+	private $user = 'root';
+	private $pass = 'Mighty Quinn';
 	private $tableName = '`atv`.`recent`';
+	private $pdo;
 	
-	public function __construct($server, $user, $pass) {
-		$this->pdo = new PDO("mysql:host={$server}", $user, $pass);
+	public $recent = array();
+	private $categories = array('TV Shows', 'Movies');
+	
+	public function __construct() {
+		$this->pdo = new PDO("mysql:host={$this->server}", $this->user, $this->pass);
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		//$this->pdo->exec('SET time_zone = "US/Eastern";');
 	}

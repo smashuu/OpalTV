@@ -8,7 +8,6 @@ class TVApplication extends Application {
 	public $mediaUrl= 'http://vidboy.local/video/';
 	public $imagesUrl = 'http://trailers.apple.com/appletv/us/images/';
 	public $thumbsUrl = 'http://vidboy.local/media/thumbs/';
-	public $vidExtensions = array('mp4','m4v');
 	
 	public function __construct() {
 		parent::__construct();
@@ -21,7 +20,7 @@ class TVApplication extends Application {
 		$this->route[1] = 'King of the Hill';
 		*/
 		
-		if (preg_match('/.*\\.('.implode('|', $this->vidExtensions).')$/', $this->url)) {
+		if (preg_match('/.*\\.(mp4|m4v)$/', $this->url)) {
 			require_once 'PlayController.class.php';
 			$controller = new PlayController($this);
 		} elseif ($this->route[0] === 'TV Shows') {

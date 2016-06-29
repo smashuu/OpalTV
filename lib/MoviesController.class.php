@@ -9,7 +9,7 @@ class MoviesController extends Controller {
 	public function __construct($application) {
 		parent::__construct($application);
 		$this->models = array(
-			'directory' => DirectoryModel::alphaFiles($this->application->mediaDir.'Movies', $this->application->vidExtensions)
+			'directory' => DirectoryModel::alphaFiles($this->application->mediaDir.'Movies')
 		);
 		$this->view = new DirectoryView($this);
 	}

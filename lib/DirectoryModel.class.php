@@ -2,67 +2,99 @@
 class DirectoryModel implements Iterator, Countable, ArrayAccess {
 	private $position = 0;
 	private $currentVal;
+	private $titleRegex = '/^(A |An |The )?(\d\d-)?(.+)(\.mp4|\.m4v)?$/';
 	
 	private $dir = array();
-	private $extensions = array();
 	public $path;
 	public $isDir;
 	public $pathinfo;
+	public $sortTitle;
+	public $displayTitle;
 	
-	public function __construct($path='', $extensions=array()) {
+	public function __construct($path='') {
 		if (!empty($path)) {
 			$this->path = $this->globSafe($path);
 			$this->pathinfo = pathinfo($path);
 			$this->isDir = is_dir($path);
-			$this->extensions = $extensions;
+			$this->sortTitle = $this->sortTitle();
+			$this->displayTitle = $this->displayTitle();
 		}
 	}
+	public function sortTitle() {
+		preg_match($this->titleRegex, $this->pathinfo['filename'], $matches);
+		return $matches[2] . $matches[3];
+	}
+	public function displayTitle() {
+		preg_match($this->titleRegex, $this->pathinfo['filename'], $matches);
+		return $matches[1] . $matches[3];
+	}
 	private function globSafe($str) {
-		return preg_replace('#/$#', '', $str);
+		return preg_replace('/\/$/', '', $str);
 	}
 	
+	public function pushPath($path) {
+		$newDir = new DirectoryModel($path);
+		$this->push($newDir);
+	}
 	public function push($newDir) {
 		$this->dir[] = $newDir;
 	}
+	public function fill($dirArray) {
+		$this->dir = $dirArray;
+	}
 	
-	public static function files($path='', $extensions=array()) {
-		$dirObj = new DirectoryModel($path, $extensions);
-		$dirScanned = glob("{$dirObj->path}/*.{".implode(',', $extensions).'}', GLOB_BRACE);
-var_dump($dirScanned); exit;
-		foreach ($dirScanned as $entry) {
-			$dirObj->dir[] = new DirectoryModel($entry, $extensions);
+	private function populate($glob) {
+		foreach ($glob as $entry) {
+			$this->pushPath($entry);
 		}
+		usort($this->dir, function ($a, $b) {
+			return strnatcmp($a->sortTitle, $b->sortTitle);
+		});
+	}
+	private function populateFiles() {
+		$this->populate(glob("{$this->path}/*.{mp4,m4v}", GLOB_BRACE));
+	}
+	private function populateFolders() {
+		$this->populate(glob("{$this->path}/*", GLOB_ONLYDIR));
+		
+	}
+	private function populateChildFiles() {
+		foreach ($this as $child) {
+			$child->populateFiles();
+		}
+	}
+	private function populateChildFolders() {
+		foreach ($this as $child) {
+			$child->populateFiles();
+		}
+	}
+	
+	
+	public static function files($path) {
+		$dirObj = new DirectoryModel($path);
+		$dirObj->populateFiles();
 		return $dirObj;
 	}
-	public static function folders($path='', $extensions=array()) {
-		$dirObj = new DirectoryModel($path, $extensions);
-		$dirScanned = glob("{$dirObj->path}/*", GLOB_ONLYDIR);
-		foreach ($dirScanned as $entry) {
-			$dirObj->dir[] = new DirectoryModel($entry, $extensions);
-		}
+	public static function folders($path) {
+		$dirObj = new DirectoryModel($path);
+		$dirObj->populateFolders();
 		return $dirObj;
 	}
-	public static function folderFiles($path='', $extensions=array()) {
-		$dirObj = new DirectoryModel($path, $extensions);
-		$dirScanned = glob("{$dirObj->path}/*", GLOB_ONLYDIR);
-		foreach ($dirScanned as $entry) {
-			$dirObj->dir[] = DirectoryModel::files($entry, $extensions);
-		}
+	public static function folderFiles($path) {
+		$dirObj = self::folders($path);
+		$dirObj->populateChildFiles();
 		return $dirObj;
 	}
-	public static function folderFolders($path='', $extensions=array()) {
-		$dirObj = new DirectoryModel($path, $extensions);
-		$dirScanned = glob("{$dirObj->path}/*", GLOB_ONLYDIR);
-		foreach ($dirScanned as $entry) {
-			$dirObj->dir[] = DirectoryModel::folders($entry, $extensions);
-		}
+	public static function folderFolders($path) {
+		$dirObj = self::folders($path);
+		$dirObj->populateChildFolders();
 		return $dirObj;
 	}
 	
 	private function groupByAlpha() {
 		$sorter = array();
-		foreach ($this->dir as $currentDir) {
-			$firstChar = strtoupper(substr($currentDir->pathinfo['filename'], 0, 1));
+		foreach ($this as $currentDir) {
+			$firstChar = strtoupper(substr($currentDir->sortTitle, 0, 1));
 			if (!isset($sorter[$firstChar])) {
 				$sorter[$firstChar] = array();
 			}
@@ -71,19 +103,19 @@ var_dump($dirScanned); exit;
 		$outputDir = new DirectoryModel();
 		foreach ($sorter as $letter=>$subDirs) {
 			$fakeDir = new DirectoryModel();
-			$fakeDir->pathinfo['filename'] = $letter;
-			$fakeDir->dir = $subDirs;
-			$outputDir->dir[] = $fakeDir;
+			$fakeDir->displayTitle = $letter;
+			$fakeDir->fill($subDirs);
+			$outputDir->push($fakeDir);
 		}
 		return $outputDir;
 	}
 	
-	public static function alphaFolders($path='', $extensions=array()) {
-		$dirObj = DirectoryModel::folders($path, $extensions);
+	public static function alphaFolders($path='') {
+		$dirObj = DirectoryModel::folders($path);
 		return $dirObj->groupByAlpha();
 	}
-	public static function alphaFiles($path='', $extensions=array()) {
-		$dirObj = DirectoryModel::files($path, $extensions);
+	public static function alphaFiles($path='') {
+		$dirObj = DirectoryModel::files($path);
 		return $dirObj->groupByAlpha();
 	}
 	

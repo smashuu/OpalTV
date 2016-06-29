@@ -9,7 +9,7 @@ class TvEpisodesController extends Controller {
 	public function __construct($application) {
 		parent::__construct($application);
 		$this->models = array(
-			'directory' => DirectoryModel::folderFiles($this->application->mediaDir.$this->application->url, $this->application->vidExtensions)
+			'directory' => DirectoryModel::folderFiles($this->application->mediaDir.$this->application->url)
 		);
 		$this->view = new DirectoryView($this);
 	}

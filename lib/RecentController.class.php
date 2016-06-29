@@ -10,21 +10,21 @@ class RecentController extends Controller {
 	public function __construct($application) {
 		parent::__construct($application);
 		
-		$recentDb = new RecentModel('localhost', 'root', 'Mighty Quinn');
+		$recentDb = new RecentModel();
 		$recentPlays = $recentDb->get(5);
 		$recents = new DirectoryModel();
 		
 		$recentTV = new DirectoryModel();
 		$recentTV->pathinfo['filename'] = 'Recent TV Shows';
 		foreach ($recentPlays['TV Shows'] as $show) {
-			$recentTV->push(new DirectoryModel($show['path']));
+			$recentTV->pushPath($show['path']);
 		}
 		$recents->push($recentTV);
 		
 		$recentMovies = new DirectoryModel();
 		$recentMovies->pathinfo['filename'] = 'Recent Movies';
 		foreach ($recentPlays['Movies'] as $movie) {
-			$recentMovies->push(new DirectoryModel($movie['path']));
+			$recentMovies->pushPath($movie['path']);
 		}
 		$recents->push($recentMovies);
 		

@@ -19,7 +19,7 @@ class DirectoryView extends View {
 		$shelfItemCounter = 0;
 		foreach ($data as $sectionIdx=>$section) {
 			$sectionIdx++;
-			$mainDom->setText("//shelfWrapper[{$sectionIdx}]/collectionDivider/title", $section->pathinfo['filename']);
+			$mainDom->setText("//shelfWrapper[{$sectionIdx}]/collectionDivider/title", $section->displayTitle);
 			$mainDom->formatAttr("//shelfWrapper[{$sectionIdx}]/shelf", 'id', array($sectionIdx));
 			
 			$mainDom->repeat("//shelfWrapper[{$sectionIdx}]//moviePoster", count($section));
@@ -29,7 +29,7 @@ class DirectoryView extends View {
 				$mediaPath = str_replace('%2F', '/', rawurlencode(preg_replace('/^' . addcslashes($this->controller->application->mediaDir,'/') . '/', '', $poster->path)));
 				$mediaUrl = $this->controller->application->rootDir . $mediaPath;
 				
-				$mainDom->setText("//shelfWrapper[{$sectionIdx}]//moviePoster[{$posterIdx}]/title", $poster->pathinfo['filename']);
+				$mainDom->setText("//shelfWrapper[{$sectionIdx}]//moviePoster[{$posterIdx}]/title", $poster->displayTitle);
 				$mainDom->formatAttr("//shelfWrapper[{$sectionIdx}]//moviePoster[{$posterIdx}]", 'id', array($shelfItemCounter));
 				$mainDom->setText("//shelfWrapper[{$sectionIdx}]//moviePoster[{$posterIdx}]/image", $this->controller->application->thumbsUrl . $mediaPath . '.jpg');
 				$mainDom->setAttr("//shelfWrapper[{$sectionIdx}]//moviePoster[{$posterIdx}]", 'onSelect', "atv.loadURL('{$mediaUrl}');");

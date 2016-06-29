@@ -9,7 +9,7 @@ class TvShowsController extends Controller {
 	public function __construct($application) {
 		parent::__construct($application);
 		$this->models = array(
-			'directory' => DirectoryModel::alphaFolders($this->application->mediaDir.'TV Shows', $this->application->vidExtensions)
+			'directory' => DirectoryModel::alphaFolders($this->application->mediaDir.'TV Shows')
 		);
 		$this->view = new DirectoryView($this);
 	}
