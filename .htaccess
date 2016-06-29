@@ -1,0 +1,20 @@
+AddDefaultCharset UTF-8
+
+# Serve friendly urls as PHP5
+<FilesMatch "^(archive|rss|error)$">
+	ForceType "application/x-httpd-php5; charset=UTF-8"
+	SetHandler application/x-httpd-php
+</FilesMatch>
+
+
+RewriteEngine on
+
+#RewriteBase /roaming
+
+RewriteCond %{REQUEST_URI} /(static)/
+RewriteRule (.*)/(static)/(.*) $2/$3 [L]
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond $1 !\.(js|css|png|jpg|svg|ico|otf|ttf)$
+RewriteRule ^(.*)$ index.php?url=$1 [L,QSA,B]

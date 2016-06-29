@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<atv>
+	<body>
+		<videoPlayer id="com.sample.video-player">
+			<httpFileVideoAsset id="teaser24484">
+				<mediaURL>http://vidboy.local/video/TV%20Shows/Home%20Movies/0109%20Life%20Through%20a%20Fisheye%20Lens.m4v</mediaURL>
+				<title>VidBoy</title>
+				<description>URL goes here</description>
+				<image>http://trailers.apple.com/appletv/us/images/Play261x385.png</image>
+			</httpFileVideoAsset>
+		</videoPlayer>
+	</body>
+</atv>

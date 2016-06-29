@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<atv>
+	<head>
+		<script src="https://trailers.apple.com/appletv/us/js/main.js"/>
+	</head>
+	<body>
+		<scroller id="com.sample.movie-shelf">
+			<items id="pageItems">
+				<shelfWrapper>
+					<collectionDivider alignment="left" accessibilityLabel="CATEGORY">
+						<title>CATEGORY</title>
+					</collectionDivider>
+					<shelf id="shelf_%d">
+						<sections>
+							<shelfSection>
+								<items>
+									<moviePoster id="shelf_item_%d" accessibilityLabel="TITLE" onSelect="loadTrailerDetailPage('%s');" onPlay="atv.loadURL('%s');">
+										<title>TITLE</title>
+										<image>http://trailers.apple.com/appletv/us/images/Play261x385.png</image>
+										<defaultImage>resource://Poster.jpg</defaultImage>
+									</moviePoster>
+								</items>
+							</shelfSection>
+						</sections>
+					</shelf>
+				</shelfWrapper>
+			</items>
+		</scroller>
+	</body>
+</atv>
