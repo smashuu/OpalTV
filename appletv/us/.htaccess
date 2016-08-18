@@ -9,7 +9,7 @@ AddDefaultCharset UTF-8
 
 RewriteEngine on
 
-#RewriteBase /roaming
+#RewriteBase /maindir
 
 RewriteCond %{REQUEST_URI} /(static)/
 RewriteRule (.*)/(static)/(.*) $2/$3 [L]
